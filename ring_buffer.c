@@ -76,6 +76,20 @@ ring_buffer_bool_t ring_buffer_enqueue(ring_buffer_t* _buffer, char _data) {
   return 1;
 }
 
+ring_buffer_bool_t ring_buffer_enqueue_array(ring_buffer_t *_buffer, char *_data, ring_buffer_size_t _len) {
+
+  if(_buffer == NULL) {
+    return 0;
+  }
+
+  ring_buffer_size_t i;
+  for(i = 0; i <_len; i++) {
+    ring_buffer_enqueue(_buffer, _data[i]);
+  }
+  return 1;
+}
+
+
 ring_buffer_bool_t ring_buffer_dequeue(ring_buffer_t* _buffer, char *_data) {
 
   if(ring_buffer_is_empty(_buffer)) {
@@ -86,6 +100,21 @@ ring_buffer_bool_t ring_buffer_dequeue(ring_buffer_t* _buffer, char *_data) {
   *_data = _buffer->_buffer[_buffer->_tail];
   _buffer->_tail = ((_buffer->_tail + 1) & _buffer->_mask);
   return 1;
+}
+
+ring_buffer_bool_t ring_buffer_dequeue_array(ring_buffer_t* _buffer, char *_data, ring_buffer_size_t _len) {
+  if(ring_buffer_is_empty(_buffer)){
+    // No items.
+    return 0;
+  }
+
+  char *data_ptr = _data;
+  ring_buffer_size_t cnt = 0;
+  while((cnt < _len) && ring_buffer_dequeue(_buffer, data_ptr)) {
+    cnt ++;
+    data_ptr++;
+  }
+  return cnt;
 }
 
 ring_buffer_bool_t ring_buffer_peek(ring_buffer_t *_buffer, char *_data, ring_buffer_size_t _index) {
@@ -99,4 +128,30 @@ ring_buffer_bool_t ring_buffer_peek(ring_buffer_t *_buffer, char *_data, ring_bu
   *_data = _buffer->_buffer[_data_index];
   return 1;
 }
+
+ring_buffer_bool_t ring_buffer_printf(ring_buffer_t *_buffer) {
+  if(_buffer == NULL) {
+    return 0;
+  }
+
+  ring_buffer_size_t i = 0;
+  ring_buffer_size_t length = ring_buffer_nums(_buffer);
+  if(ring_buffer_is_full(_buffer)) {
+    printf(" -------- %s, _buffer is full!\n", __FUNCTION__);
+  } else if(ring_buffer_is_empty(_buffer)){
+    printf(" -------- %s, _buffer is empty!\n", __FUNCTION__);
+  }
+  printf(" -------- %s, head: %ld, tail: %ld, legth: %ld:\n", __FUNCTION__, _buffer->_head, _buffer->_tail, length);
+  for(i = 0; i < length; i++) {
+    char _tmp = '\0';
+    ring_buffer_peek(_buffer, &_tmp, i);
+    printf("%c", _tmp);
+  }
+  printf("\n"); 
+
+  return 1;
+}
+
+
+
 

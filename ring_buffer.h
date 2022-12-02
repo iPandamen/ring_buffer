@@ -45,11 +45,14 @@ extern ring_buffer_bool_t ring_buffer_exit(ring_buffer_t *_buffer);
 ring_buffer_bool_t ring_buffer_set_mode(ring_buffer_t* _buffer,  ring_buffer_mode_t _mode);
 
 extern ring_buffer_bool_t ring_buffer_enqueue(ring_buffer_t* _buffer, char _data);
+extern ring_buffer_bool_t ring_buffer_enqueue_array(ring_buffer_t *_buffer, char *_data, ring_buffer_size_t _len);
 
 extern ring_buffer_bool_t ring_buffer_dequeue(ring_buffer_t* _buffer, char *_data);
+extern ring_buffer_bool_t ring_buffer_dequeue_array(ring_buffer_t* _buffer, char *_data, ring_buffer_size_t _len);
 
 extern ring_buffer_bool_t ring_buffer_peek(ring_buffer_t *_buffer, char *_data, ring_buffer_size_t _index);
 
+extern ring_buffer_bool_t ring_buffer_printf(ring_buffer_t *_buffer);
 
 inline ring_buffer_bool_t ring_buffer_is_empty(ring_buffer_t *_buffer) {
   return (_buffer->_head == _buffer->_tail);
